@@ -1,7 +1,7 @@
 
 ---
 # Keep YAML above the first chunk.
-title: "<span style='font-size: 34px'>DARE-Newcrest data challenge - flotation plant dataset</span>"
+title: "<span style='font-size: 34px'>DARE Deluxe Data Challenge I</span>"
 output:
   html_document:
     df_print: paged
@@ -18,9 +18,9 @@ opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ```
 
-DARE 2022
+DARE 2023
 
-In this R Markdown file, we will provide a template for the DARE-Newcrest data challenge. The main steps covered here will be:
+In this R Markdown file, we will provide a template for the DARE Deluxe Data Challenge. The main steps covered here will be:
 
 - Load the data
 - Provide an overview of what is in the data

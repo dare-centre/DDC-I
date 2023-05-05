@@ -1,7 +1,6 @@
-# DARE-Newcrest data challenge - flotation plant dataset
-DARE 2022
+# DARE - Deluxe Data Challenge I
 
-This repository contains the data and example jupyter notebooks for the DARE-Newcrest data challenge.
+This repository contains the data and example jupyter notebooks for the DARE Deluxe Data Challenge I.
 
 ## Data
 The data is available in the `data` folder. We will be using the files:
