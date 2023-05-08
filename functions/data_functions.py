@@ -20,29 +20,39 @@ def load_raw_data():
 ###############################################################################
 ###############################################################################
 
-def load_hourly_data():
+def load_daily_data():
     '''
     Load the hourly ddata
     '''
-    train_data = pd.read_csv(
+    train_x = pd.read_csv(
         os.path.join(
             'data',
-            'hourly_train_data.csv'
+            'daily_train_X_data.csv'
         ),
         index_col=0,parse_dates=True
     )
-    test_data = pd.read_csv(
+    train_y = pd.read_csv(
         os.path.join(
             'data',
-            'hourly_test_data.csv'
+            'daily_train_y_data.csv'
         ),
         index_col=0,parse_dates=True
     )
 
-    train_x = train_data.drop('% Silica Concentrate',axis=1)
-    train_y = train_data['% Silica Concentrate'].to_frame()
-    test_x = test_data.drop('% Silica Concentrate',axis=1)
-    test_y = test_data['% Silica Concentrate'].to_frame()
+    test_x = pd.read_csv(
+        os.path.join(
+            'data',
+            'daily_test_X_data.csv'
+        ),
+        index_col=0,parse_dates=True
+    )
+    test_y = pd.read_csv(
+        os.path.join(
+            'data',
+            'daily_test_y_data.csv'
+        ),
+        index_col=0,parse_dates=True
+    )
 
     return train_x, train_y, test_x, test_y
 

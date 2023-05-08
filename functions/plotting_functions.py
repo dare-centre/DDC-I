@@ -27,7 +27,7 @@ def plot_model_fit(x, y_obs, y_mod, mod_metrics=None,**kwargs):
     if not mod_metrics is None:
         ax.text(
             0.95, 0.05, 
-            'R2 = {:.2f}\nRMSE = {:.2f}\nMAE = {:.2f}'.format(mod_metrics['r2'], mod_metrics['rmse'], mod_metrics['mae']),
+            'R2 = {:.2f}\nRMSE = {:.2f}\nBSS = {:.2f}'.format(mod_metrics['r2'], mod_metrics['rmse'], mod_metrics['bss']),
             horizontalalignment='right', verticalalignment='bottom',
             bbox=dict(edgecolor='black', facecolor='white'),
             transform=ax.transAxes

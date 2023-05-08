@@ -11,15 +11,18 @@ from functions.plotting_functions import plot_model_fit
 def calculate_model_performance(y_obs, y_mod, **kwargs):
     '''
     Calculate the model performance metrics:
+    - BSS
     - R2
     - RMSE
     - MAE
     '''
     # Calculate the metrics
+    bss = 1 - (np.sum((y_obs[1:] - y_mod[1:])**2) / np.sum((y_obs[1:]-y_obs[:-1])**2))
     r2 = r2_score(y_obs, y_mod)
     rmse = np.sqrt(mean_squared_error(y_obs, y_mod))
     mae = mean_absolute_error(y_obs, y_mod)
     metrics_out = {
+        'bss': bss,
         'r2': r2,
         'rmse': rmse,
         'mae': mae
@@ -44,7 +47,8 @@ def assess_model_prediction(pred_dict_in, test=False, **kwargs):
         - test: False - set to True to get test set results
     Output:
         - metrics: A pandas dataframe with:
-            - R2i
+            - BSS
+            - R2
             - RMSE
             - MAE
         - plots for train, validation and test performance
@@ -87,11 +91,12 @@ def assess_model_prediction(pred_dict_in, test=False, **kwargs):
     # construct pandas dataframe
     metrics = pd.DataFrame(
         {
-            'train': train_metrics,
-            'val': val_metrics,
-            'test': test_metrics
+            'Train': train_metrics,
+            'Validation': val_metrics,
+            'Test': test_metrics
          }
     )
+    metrics.index = [_.upper() for _ in metrics.index]
 
     return metrics
 
