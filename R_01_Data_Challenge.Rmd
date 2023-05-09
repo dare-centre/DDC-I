@@ -32,13 +32,16 @@ Everything we need to get started.
 
 ```{r chunk_one}
 
-script_path_current <- funr::get_script_path()
+# Get the path to this Rmd file.
+script_path_current <- here::here()
 
-# plotting
+# Load supporting functions...
+#
+# Data.
 source(Gmisc::pathJoin(script_path_current, "functions_R", "R_data_functions.R"), local = knitr::knit_global())
-# helper
+# Helper.
 source(Gmisc::pathJoin(script_path_current, "functions_R", "R_helper_functions.R"), local = knitr::knit_global())
-# data
+# Plotting.
 source(Gmisc::pathJoin(script_path_current, "functions_R", "R_plotting_functions.R"), local = knitr::knit_global())
 
 ```
