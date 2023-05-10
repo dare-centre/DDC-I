@@ -5,15 +5,19 @@
 calculate_model_performance <- function(y_obs, y_mod) {
 
   # Calculate the model performance metrics:
+  #  - BSS
   #  - R2
   #  - RMSE
   #  - MAE
 
   # Calculate the metrics
+
+  bss = 1 - {sum((y_obs[-1, ] - y_mod[-1, ])^2) / sum((y_obs[-1, ] - head(y_obs, -1))^2)}
   r2 <- MLmetrics::R2_Score(y_obs, y_mod)
   rmse <- Metrics::rmse(y_obs, y_mod)
   mae <- Metrics::mae(y_obs, y_mod)
   metrics_out <- list(
+    "bss" = bss,
     "r2" = r2,
     "rmse" = rmse,
     "mae" = mae
