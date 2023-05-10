@@ -43,6 +43,8 @@ source(Gmisc::pathJoin(script_path_current, "functions_R", "R_data_functions.R")
 source(Gmisc::pathJoin(script_path_current, "functions_R", "R_helper_functions.R"), local = knitr::knit_global())
 # Plotting.
 source(Gmisc::pathJoin(script_path_current, "functions_R", "R_plotting_functions.R"), local = knitr::knit_global())
+# Preprocessing.
+source(Gmisc::pathJoin(script_path_current, "functions_R", "R_preprocessing.R"), local = knitr::knit_global())
 
 ```
 
@@ -68,7 +70,7 @@ rm(all_data)
 
 ```{r chunk_properties}
 
-# lets look at some properties of the data 
+# lets look at some properties of the data
 cat("Number of features: ", ncol(train_val_x),
   "\nNumber of training observations: ", nrow(train_val_x),
   "\nNumber of test observations: ", nrow(test_x_all),
@@ -281,8 +283,9 @@ predicted_data <- inversescaler_predictor(data_list, scaler_y_range)
 ```{r chunk_plot}
 
 ## plot the model performance and get metrics
-metrics <- assess_model_prediction(predicted_data, test = FALSE)
-cat("Model performance metrics:")
+test_pwd <- NULL
+metrics <- assess_model_prediction(predicted_data, test = test_pwd)
+cat("Model performance metrics:\n\n")
 metrics
 
 ```

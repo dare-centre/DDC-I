@@ -27,7 +27,11 @@ calculate_model_performance <- function(y_obs, y_mod) {
 
   # Calculate the metrics
 
-  bss = 1 - {sum((y_obs[-1, ] - y_mod[-1, ])^2) / sum((y_obs[-1, ] - head(y_obs, -1))^2)}
+  bss <- 1 - {sum((y_obs[-1, ] - y_mod[-1, ])^2) / sum((y_obs[-1, ] - head(y_obs, -1))^2)}
+
+  y_obs <- as.vector(y_obs[,1])
+  y_mod <- as.vector(y_mod[,1])
+
   r2 <- MLmetrics::R2_Score(y_obs, y_mod)
   rmse <- Metrics::rmse(y_obs, y_mod)
   mae <- Metrics::mae(y_obs, y_mod)
@@ -43,7 +47,7 @@ calculate_model_performance <- function(y_obs, y_mod) {
 ###############################################################################
 ###############################################################################
 
-assess_model_prediction <- function(predictor, test = FALSE) {
+assess_model_prediction <- function(predictor, test = NULL) {
 
   # Plot the model performance for training, validation and test data.
   # Return the metrics for model performance.
@@ -55,53 +59,47 @@ assess_model_prediction <- function(predictor, test = FALSE) {
   #        - val_y_pred    predicted values for validation data
   #        - test_y        observed values for test data
   #        - test_y_pred   predicted values for test data
-  #   - test: False - set to True to get test set results
+  #   - test: NULL - provide password to get test set results
   # Output:
   #    - metrics: A dataframe with,
+  #        - BSS
   #        - R2
   #        - RMSE
   #        - MAE
   #    - plots for train, validation and test performance
 
-  predictor_names <- names(predictor)
-
   # Calculate the metrics
-  if ("train_y" %in% predictor_names) {
+  if (exists("train_y", predictor)) {
     train_metrics <- calculate_model_performance(
       predictor$train_y, predictor$train_y_pred
     )
-    ### DEBUG
-    cat("\npredictor$train_time", head(predictor$train_time), sep = " ")
-    cat("\npredictor$train_y", head(predictor$train_y), sep = " ")
-    cat("\npredictor$train_y_pred", head(predictor$train_y_pred), sep = " ")
-    cat("\n")
-    ### END DEBUG
     plot_model_fit(
-      predictor$train_time, predictor$train_y, predictor$train_y_pred,
+      predictor$train_time, predictor$train_y[,1], predictor$train_y_pred[,1],
       mod_metrics = train_metrics,
       title = "Model fit for training data"
     )
   } else {
     train_metrics <- NULL
   }
-  if ("val_y" %in% predictor_names) {
+  if (exists("val_y", predictor)) {
     val_metrics <- calculate_model_performance(
       predictor$val_y, predictor$val_y_pred
     )
     plot_model_fit(
-      predictor$val_time, predictor$val_y, predictor$val_y_pred,
+      predictor$val_time, predictor$val_y[,1], predictor$val_y_pred[,1],
       mod_metrics = val_metrics,
       title = "Model fit for validation data"
     )
   } else {
     val_metrics <- NULL
   }
-  if ("test_y" %in% predictor_names) {
+  test_bool <- cheeky_check(test)
+  if (exists("test_y", predictor) & test_bool) {
     test_metrics <- calculate_model_performance(
       predictor$test_y, predictor$test_y_pred
     )
     plot_model_fit(
-      predictor$test_time, predictor$test_y, predictor$test_y_pred,
+      predictor$test_time, predictor$test_y[,1], predictor$test_y_pred[,1],
       mod_metrics = test_metrics,
       title = "Model fit for test data"
     )
@@ -111,9 +109,9 @@ assess_model_prediction <- function(predictor, test = FALSE) {
 
   # construct list
   metrics <- list(
-    "train" = train_metrics,
-    "val" = val_metrics,
-    "test" = test_metrics
+    "Train" = train_metrics,
+    "Validation" = val_metrics,
+    "Test" = test_metrics
   )
 
   return(metrics)
