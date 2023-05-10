@@ -57,7 +57,7 @@ train_val_y <- all_data$train_y
 test_x_all <- all_data$test_x
 test_y <- all_data$test_y
 
-y_var <- "v2_WE 16-03 B3"   # Gauge name to predict
+y_var <- "v2_WE.16.03.B3"   # Gauge name to predict
 train_val_y <- select(train_val_y, all_of(y_var))
 test_y <- select(test_y, all_of(y_var))
 
@@ -236,18 +236,11 @@ We will use a simple linear regression model as a baseline. You can implement yo
 ## YOUR CODE HERE
 
 ## fit a linear model to the data
-model1 <- lm(formula = as.formula(paste0(y_var, " ~ .")), data = cbind(train_x, train_y))
-#
-model <- lm(train_x ~ train_y)
+model <- lm(formula = as.formula(paste0(y_var, " ~ .")), data = cbind(train_x, train_y))
 
 ## fit a neural network to the data
-## Example Python code.
-##from sklearn.neural_network import MLPRegressorve
-## model <- MLPRegressor(
-##   hidden_layer_sizes = (100, 20), max_iter = 1000,
-##   activation = "relu", solver = "adam",
-## )
-## model.fit(train_x, train_y.squeeze())
+#library(nnet)   # For neural network functions.
+#model <- fdm2id::MLPREG(train_x, train_y)
 
 ## predict on data
 train_y_pred <- predict(model, newdata = as.data.frame(train_x))
