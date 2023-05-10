@@ -116,8 +116,9 @@ if (val_split == TRUE) {
   rm(outcome_predictor_count_match)
 
   val_proportion <- 0.2   # Keep val_proportion in the range 0 to 1.
-  split1 <- c(rep(0, {1 - val_proportion} * nrow(train_val_x)),
-              rep(1, val_proportion * nrow(train_val_x)))
+  val_absolute <- round(val_proportion * nrow(train_val_x))
+  split1 <- c(rep(0, nrow(train_val_x) - val_absolute),
+              rep(1, val_absolute))
   if (shuffle == TRUE) {
     split1 <- sample(split1)
   }
