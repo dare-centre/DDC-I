@@ -122,47 +122,18 @@ assess_model_prediction <- function(predictor, test = FALSE) {
 ###############################################################################
 ###############################################################################
 
-inversescaler_predictor <- function(predictor) {
+inversescaler_predictor <- function(predictor, scaler) {
 
   # Inverse scale selected predictor dataframe columns.
 
-  predictor$train_y <- predictor$train_y *
-    attr(predictor$train_y, "scaled:scale") +
-    attr(predictor$train_y, "scaled:center")
-  attr(predictor$train_y, "scaled:scale") <- NULL
-  attr(predictor$train_y, "scaled:center") <- NULL
+  predictor$train_y[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$train_y, to = scaler))
+  predictor$train_y_pred[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$train_y_pred, to = scaler))
+  predictor$test_y[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$test_y, to = scaler))
+  predictor$test_y_pred[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$test_y_pred, to = scaler))
 
-  predictor$train_y_pred <- predictor$train_y_pred *
-    attr(predictor$train_y_pred, "scaled:scale") +
-    attr(predictor$train_y_pred, "scaled:center")
-  attr(predictor$train_y_pred, "scaled:scale") <- NULL
-  attr(predictor$train_y_pred, "scaled:center") <- NULL
-
-  predictor$test_y <- predictor$test_y *
-    attr(predictor$test_y, "scaled:scale") +
-    attr(predictor$test_y, "scaled:center")
-  attr(predictor$test_y, "scaled:scale") <- NULL
-  attr(predictor$test_y, "scaled:center") <- NULL
-
-  predictor$test_y_pred <- predictor$test_y_pred *
-    attr(predictor$test_y_pred, "scaled:scale") +
-    attr(predictor$test_y_pred, "scaled:center")
-  attr(predictor$test_y_pred, "scaled:scale") <- NULL
-  attr(predictor$test_y_pred, "scaled:center") <- NULL
-
-  if ("val_y" %in% colnames(predictor)) {
-
-    predictor$val_y <- predictor$test_y_pred *
-      attr(predictor$val_y, "scaled:scale") +
-      attr(predictor$val_y, "scaled:center")
-    attr(predictor$val_y, "scaled:scale") <- NULL
-    attr(predictor$val_y, "scaled:center") <- NULL
-
-    predictor$val_y_pred <- predictor$test_y_pred *
-      attr(predictor$val_y_pred, "scaled:scale") +
-      attr(predictor$val_y_pred, "scaled:center")
-    attr(predictor$val_y_pred, "scaled:scale") <- NULL
-    attr(predictor$val_y_pred, "scaled:center") <- NULL
+  if (exists("val_y", predictor)) {
+    predictor$val_y[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$val_y, to = scaler))
+    predictor$val_y_pred[,1] <- DescTools::StripAttr(datawizard::rescale(predictor$val_y_pred, to = scaler))
   }
 
   return(predictor)

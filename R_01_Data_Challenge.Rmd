@@ -215,11 +215,12 @@ if (use_scaler) {
   }
 
   # Base scaling on train_y.
-  test_y[,1] <- DescTools::StripAttr(datawizard::rescale(test_y[,], to = c(0, 1), range = range(train_y)))
-  if (val_split) {
-    val_y[,1] <- DescTools::StripAttr(datawizard::rescale(val_y, to = c(0, 1), range = range(train_y)))
-  }
+  scaler_y_range <- range(train_y)
   train_y[,1] <- DescTools::StripAttr(datawizard::rescale(train_y, to = c(0, 1)))
+  test_y[,1] <- DescTools::StripAttr(datawizard::rescale(test_y[,], to = c(0, 1), range = scaler_y_range))
+  if (val_split) {
+    val_y[,1] <- DescTools::StripAttr(datawizard::rescale(val_y, to = c(0, 1), range = scaler_y_range))
+  }
 
 } else {
   scaler_x <- NULL
@@ -243,10 +244,15 @@ model <- lm(formula = as.formula(paste0(y_var, " ~ .")), data = cbind(train_x, t
 #model <- fdm2id::MLPREG(train_x, train_y)
 
 ## predict on data
-train_y_pred <- predict(model, newdata = as.data.frame(train_x))
-test_y_pred <- predict(model, newdata = as.data.frame(test_x))
+train_y_pred <- data.frame(tmp = predict(model, newdata = as.data.frame(train_x)))
+names(train_y_pred) <- y_var
+#
+test_y_pred <- data.frame(tmp = predict(model, newdata = as.data.frame(test_x)))
+names(test_y_pred) <- y_var
+#
 if (!is.null(val_x)) {
-  val_y_pred <- predict(model, newdata = as.data.frame(val_x))
+  val_y_pred <- data.frame(tmp = predict(model, newdata = as.data.frame(val_x)))
+  names(val_y_pred) <- y_var
 }
 
 ## END CODE
@@ -268,9 +274,7 @@ data_list <- list(
   "val_y" = val_y,
   "val_y_pred" = val_y_pred
 )
-predicted_data <- inversescaler_predictor(data_list)
-
-head(data_list$train_y_pred)
+predicted_data <- inversescaler_predictor(data_list, scaler_y_range)
 
 ```
 
