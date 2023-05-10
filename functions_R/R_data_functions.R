@@ -61,13 +61,19 @@ load_daily_data <- function() {
   #
   row.names(train_x) <- pull(train_x, colnames(train_x)[1])
   row.names(train_y) <- pull(train_y, colnames(train_y)[1])
-  row.names(test_y) <- pull(test_x, colnames(test_x)[1])
+  row.names(test_x) <- pull(test_x, colnames(test_x)[1])
   row.names(test_y) <- pull(test_y, colnames(test_y)[1])
   #
   train_x <- select(train_x, -1)
   train_y <- select(train_y, -1)
   test_x <- select(test_x, -1)
   test_y <- select(test_y, -1)
+
+  # Remove spaces from column names.
+  colnames(train_x) <- make.names(colnames(train_x), unique = TRUE)
+  colnames(train_y) <- make.names(colnames(train_y), unique = TRUE)
+  colnames(test_x) <- make.names(colnames(test_x), unique = TRUE)
+  colnames(test_y) <- make.names(colnames(test_y), unique = TRUE)
 
   return(list("train_x" = train_x, "train_y" = train_y,
               "test_x" = test_x, "test_y" = test_y))
