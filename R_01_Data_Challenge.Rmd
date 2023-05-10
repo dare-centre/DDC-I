@@ -154,35 +154,43 @@ best_n <- 5 # select the top n features - use NULL for all features
 
 if (!is.null(best_n)) {
     ## YOUR CODE HERE
-    # you can use your own code here to find the optimal features
+    # you can use your own code here to find the optimal features (say a RF)
 
     # example with simpler correlation approach
-    # select the top n features
-    corr_mtrx <- head(abs(psych::corr.test(x = bind_cols(select(train_x_all, -1), train_y))$r), -1)
+    #
+    # enforce equal table lengths
+    rows_diff <- nrow(train_x_all) - nrow(train_val_y)
+    if (rows_diff > 1) {
+      train_val_y <- append_rows(train_val_y, rows_diff)
+    } else if (rows_diff < 1) {
+      train_x_all <- append_rows(train_x_all, abs(rows_diff))
+    }
+    #
+    # select the top n features, drop the observed variable
+    corr_mtrx <- head(abs(psych::corr.test(x = bind_cols(select(train_x_all, -1), select(train_val_y, -1)))$r), -1)
     # print the best n predictors
     corr_mtrx <- head(corr_mtrx[order(corr_mtrx[, ncol(corr_mtrx)], decreasing = TRUE), ], best_n)
-    corr_mtrx <- corr_mtrx[, colnames(corr_mtrx) %in% "% Silica Concentrate"]
-    for (i in 1:length(corr_mtrx)) {cat(corr_mtrx[i], "  ", names(corr_mtrx)[i], "\n", sep = "")}
-    top_n_features <- names(corr_mtrx)
+    for (i in 1:nrow(corr_mtrx)) {cat(corr_mtrx[i, ncol(corr_mtrx)], "  ", row.names(corr_mtrx)[i], "\n", sep = "")}
+    top_n_features <- row.names(corr_mtrx)
     ## END CODE
 
 } else {
     # use all features
-    top_n_features <- colnames(train_x_all)
+    top_n_features <- colnames(train_x_all)[-1]
 }
 
 # Now
 train_x <- train_x_all[top_n_features]
-train_time <- train_x_all$date
+train_time <- train_x_all[, 1]
 test_x <- test_x_all[top_n_features]
-test_time <- test_x_all$date
+test_time <- test_x_all[, 1]
 if (val_split) {
-    val_x <- val_x_all[top_n_features]
-    val_time <- val_x_all$date
+  val_x <- val_x_all[top_n_features]
+  val_time <- val_x_all[, 1]
 
 } else {
-    val_x <- NULL
-    val_time <- NULL
+  val_x <- NULL
+  val_time <- NULL
 }
 
 ```
