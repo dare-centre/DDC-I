@@ -26,38 +26,48 @@
 ###############################################################################
 ###############################################################################
 
+csv_to_dataframe <- function(file_name) {
+
+  # Get data from a CSV and convert it to a dataframe.
+
+  # Get data.
+  df <- suppressMessages(
+    as.data.frame(readr::read_csv(
+      file = Gmisc::pathJoin(
+        here::here(), "data",
+        file_name
+      ),
+      show_col_types = FALSE
+    ))
+  )
+
+  return(df)
+}
+
+###############################################################################
+###############################################################################
+
 load_daily_data <- function() {
 
   # Load the hourly data
 
-  train_x <- readr::read_csv(
-    file = Gmisc::pathJoin(
-      here::here(), "data",
-      "daily_train_X_data.csv"
-    ),
-    show_col_types = FALSE
-  )
-  train_y <- readr::read_csv(
-    file = Gmisc::pathJoin(
-      here::here(), "data",
-      "daily_train_y_data.csv"
-    ),
-    show_col_types = FALSE
-  )
-  test_x <- readr::read_csv(
-    file = Gmisc::pathJoin(
-      here::here(), "data",
-      "daily_test_X_data.csv"
-    ),
-    show_col_types = FALSE
-  )
-  test_y <- readr::read_csv(
-    file = Gmisc::pathJoin(
-      here::here(), "data",
-      "daily_test_y_data.csv"
-    ),
-    show_col_types = FALSE
-  )
+  # Import data
+  train_x <- csv_to_dataframe("daily_train_X_data.csv")
+  train_y <- csv_to_dataframe("daily_train_y_data.csv")
+  test_x <- csv_to_dataframe("daily_test_X_data.csv")
+  test_y <- csv_to_dataframe("daily_test_y_data.csv")
+
+  # Convert date columns to row indices.
+  #
+  row.names(train_x) <- pull(train_x, colnames(train_x)[1])
+  row.names(train_y) <- pull(train_y, colnames(train_y)[1])
+  row.names(test_y) <- pull(test_x, colnames(test_x)[1])
+  row.names(test_y) <- pull(test_y, colnames(test_y)[1])
+  #
+  train_x <- select(train_x, -1)
+  train_y <- select(train_y, -1)
+  test_x <- select(test_x, -1)
+  test_y <- select(test_y, -1)
 
   return(list("train_x" = train_x, "train_y" = train_y,
               "test_x" = test_x, "test_y" = test_y))
