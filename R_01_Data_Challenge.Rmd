@@ -51,14 +51,15 @@ source(Gmisc::pathJoin(script_path_current, "functions_R", "R_plotting_functions
 ```{r chunk_two}
 
 all_data <- load_daily_data()
+#
 train_val_x <- all_data$train_x
 train_val_y <- all_data$train_y
 test_x_all <- all_data$test_x
 test_y <- all_data$test_y
 
 y_var <- "v2_WE 16-03 B3"   # Gauge name to predict
-train_val_y <- select(train_val_y, all_of(c("Date", y_var)))
-test_y <- select(test_y, all_of(c("Date", y_var)))
+train_val_y <- select(train_val_y, all_of(y_var))
+test_y <- select(test_y, all_of(y_var))
 
 head(train_val_x)
 rm(all_data)
@@ -68,7 +69,7 @@ rm(all_data)
 ```{r chunk_three}
 
 # lets look at some properties of the data 
-cat("Number of features: ", ncol(train_val_x[, -1]),    # Allow for date column.
+cat("Number of features: ", ncol(train_val_x),
   "\nNumber of training observations: ", nrow(train_val_x),
   "\nNumber of test observations: ", nrow(test_x_all),
 
@@ -87,9 +88,9 @@ cat("Number of features: ", ncol(train_val_x[, -1]),    # Allow for date column.
 "Feature names:\n",
   sep = "")
 
-colnames(test_x_all)[-1]
+colnames(test_x_all)
 
-cat("\nPredict variable: ", paste0('"', colnames(train_val_y)[-1], '"  '),
+cat("\nPredict variable: ", paste0('"', colnames(train_val_y), '"  '),
   sep = "")
 
 ```
@@ -167,7 +168,7 @@ if (!is.null(best_n)) {
     }
     #
     # select the top n features, drop the observed variable
-    corr_mtrx <- head(abs(psych::corr.test(x = bind_cols(select(train_x_all, -1), select(train_val_y, -1)))$r), -1)
+    corr_mtrx <- head(abs(psych::corr.test(x = bind_cols(train_x_all, train_val_y))$r), -1)
     # print the best n predictors
     corr_mtrx <- head(corr_mtrx[order(corr_mtrx[, ncol(corr_mtrx)], decreasing = TRUE), ], best_n)
     for (i in 1:nrow(corr_mtrx)) {cat(corr_mtrx[i, ncol(corr_mtrx)], "  ", row.names(corr_mtrx)[i], "\n", sep = "")}
@@ -176,17 +177,17 @@ if (!is.null(best_n)) {
 
 } else {
     # use all features
-    top_n_features <- colnames(train_x_all)[-1]
+    top_n_features <- colnames(train_x_all)
 }
 
 # Now
 train_x <- train_x_all[top_n_features]
-train_time <- train_x_all[, 1]
+train_time <- as.POSIXct(row.names(train_x_all), format = "%Y-%m-%d")
 test_x <- test_x_all[top_n_features]
-test_time <- test_x_all[, 1]
+test_time <- as.POSIXct(row.names(test_x_all), format = "%Y-%m-%d")
 if (val_split) {
   val_x <- val_x_all[top_n_features]
-  val_time <- val_x_all[, 1]
+  val_time <- as.POSIXct(row.names(val_x_all), format = "%Y-%m-%d")
 
 } else {
   val_x <- NULL
@@ -203,17 +204,20 @@ use_scaler <- TRUE
 
 if (use_scaler) {
   # standardise the data for better performance
+  
+  # Base scaling on train_x.
   train_x <- scale(train_x)
   test_x <- scale(test_x, center = attr(train_x, "scaled:center"), scale = attr(train_x, "scaled:scale"))
   if (val_split) {
     val_x <- scale(val_x, center = attr(train_x, "scaled:center"), scale = attr(train_x, "scaled:scale"))
   }
 
-  train_y <- scale(train_y)
-  test_y <- scale(test_y, center = attr(train_y, "scaled:center"), scale = attr(train_y, "scaled:scale"))
+  # Base scaling on train_y.
+  test_y <- datawizard::rescale(test_y[,], to = c(0, 1), range = range(train_y))
   if (val_split) {
-    val_y <- scale(val_y, center = attr(train_y, "scaled:center"), scale = attr(train_y, "scaled:scale"))
+    val_y <- datawizard::rescale(val_y, to = c(0, 1), range = range(train_y))
   }
+  train_y <- datawizard::rescale(train_y, to = c(0, 1))
 
 } else {
   scaler_x <- NULL
