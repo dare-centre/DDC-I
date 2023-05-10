@@ -4,6 +4,7 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 
 from functions.plotting_functions import plot_model_fit
+from functions.preprocessing import cheeky_check
 
 ###############################################################################
 ###############################################################################
@@ -32,7 +33,7 @@ def calculate_model_performance(y_obs, y_mod, **kwargs):
 ###############################################################################
 ###############################################################################
 
-def assess_model_prediction(pred_dict_in, test=False, **kwargs):
+def assess_model_prediction(pred_dict_in, test=None, **kwargs):
     '''
     Plot the model performance for training, validation and test data.
     Return the metrics for model performance.
@@ -44,7 +45,7 @@ def assess_model_prediction(pred_dict_in, test=False, **kwargs):
             - val_y_pred: predicted values for validation data
             - test_y: observed values for test data
             - test_y_pred: predicted values for test data
-        - test: False - set to True to get test set results
+        - test: None - provide password to get test set results
     Output:
         - metrics: A pandas dataframe with:
             - BSS
@@ -77,7 +78,8 @@ def assess_model_prediction(pred_dict_in, test=False, **kwargs):
         )
     else:
         val_metrics = None
-    if not pred_dict['test_y'] is None and test:
+    test_bool = cheeky_check(test)
+    if not pred_dict['test_y'] is None and test_bool:
         test_metrics = calculate_model_performance(
             pred_dict['test_y'], pred_dict['test_y_pred']
         )
@@ -117,3 +119,6 @@ def inversescaler_pred_dict(predicted_data, scaler=None):
             predicted_data['val_y_pred'] = scaler.inverse_transform(predicted_data['val_y_pred'].reshape(-1,1))
 
     return predicted_data
+
+###############################################################################
+###############################################################################
