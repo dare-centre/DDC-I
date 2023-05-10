@@ -2,6 +2,21 @@
 ###############################################################################
 ###############################################################################
 
+append_rows <- function(df_input, n) {
+
+  # Append n empty rows to an input dataframe.
+
+  for (i in 1:n) {
+    df_input[nrow(df_input) + 1, ] <- NA
+  }
+
+  return(df_input)
+
+}
+
+###############################################################################
+###############################################################################
+
 calculate_model_performance <- function(y_obs, y_mod) {
 
   # Calculate the model performance metrics:
