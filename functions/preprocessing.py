@@ -17,6 +17,9 @@ def load_environode(data_dir,filestub,utc_to_aest=True):
         - utc_to_aest: convert data in UTC to AEST
     """
 
+    print(os.getcwd())
+    print(os.path.join(data_dir,'{}*.csv'.format(filestub)))
+
     files = glob.glob(os.path.join(data_dir,'{}*.csv'.format(filestub)))
 
     data_comb = []
